@@ -16,14 +16,6 @@ interface ObjectData {
   boundingBox: BoundingBox;
 }
 
-interface APIResponse {
-  id: string;
-  project: string;
-  iteration: string;
-  created: string;
-  predictions: ObjectData[];
-}
-
 interface CoinPrediction {
   name: string;
   value: number;
@@ -60,6 +52,7 @@ function dataURItoBlob(dataURI: string): Blob {
 function App() {
   const [dataUri, setDataUri] = useState<string>('');
   const [isVisible, setIsVisible] = useState(true);
+  const [apiResponse, setApiResponse] = useState<CalculationResult | null>(null);
   
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -73,9 +66,6 @@ function App() {
       if (context) {
         canvas.width = image.width;
         canvas.height = image.height;
-        // canvas.height = image.height;
-        console.log("Canvas: "+canvas.width + "x" + canvas.height);
-        console.log("Image: "+image.width + "x" + image.height);
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
       };
@@ -89,52 +79,20 @@ function App() {
     sendImage(blob);    
   }
   
-  // const captureImage = () => {
-  //   console.log("captureImage");
-  //   if (videoRef.current && canvasRef.current) {
-  //     const canvas = canvasRef.current;
-  //     const context = canvas.getContext("2d");
-
-  //     canvasRef.current.style.display = "block";
-  //     videoRef.current.style.display = "none";
-
-  //     canvas.width = videoRef.current.videoWidth;
-  //     canvas.height = videoRef.current.videoHeight;
-  //     if (context) {
-  //       context.drawImage(
-  //         videoRef.current,
-  //         0,
-  //         0,
-  //         videoRef.current.videoWidth,
-  //         videoRef.current.videoHeight
-  //       );
-  //       console.log("Canvas: "+canvas.width + "x" + canvas.height);
-  //       canvas.toBlob(sendImage, "image/jpeg", 1);
-  //     }
-  //   }
-  // };
-
-  const handleVideoTouch = () => {
-    handleCanvasClickAndTouch();
-  };
-
   const handleCanvasTouch = () => {
     handleCanvasClickAndTouch();
   };
 
   const handleCanvasClickAndTouch = () => {
     if (canvasRef.current) {
-      // if (canvasRef.current.style.display === "none") {
-      //   canvasRef.current.style.display = "block";
-      // } else {
-      //   canvasRef.current.style.display = "none";
-      // }
     }
   };
 
   const sendImage = async (blob: Blob | null) => {
     if (blob) {
       try {
+        document.body.classList.add("wait-cursor");
+
         const url = process.env.COIN_COUNTER_URL || "https://localhost:7118/API";
         const responseStr = await fetch(url,
           {
@@ -149,6 +107,7 @@ function App() {
         console.log(responseStr);
 
         const apiResponse: CalculationResult = await responseStr.json();
+        setApiResponse(apiResponse);
 
         console.log(apiResponse);
 
@@ -170,13 +129,16 @@ function App() {
               context.stroke();
 
               context.fillStyle = "red";
-              context.fillRect(scaledLeft, scaledTop, 80, 35);
+              const boxHeight = 35;
+              const boxWidth = 80;
+              context.fillRect(scaledLeft, scaledTop-boxHeight, boxWidth, boxHeight);
 
               context.fillStyle = "white";
               context.font = "32px Helvetica Neue";
+              const textMargin = 10;
               context.fillText(obj.name,
-                scaledLeft + 10,
-                scaledTop + 25
+                scaledLeft + textMargin,
+                scaledTop - textMargin
               );
 
             });
@@ -184,6 +146,9 @@ function App() {
         }
       } catch (error) {
         console.error("Error sending image to Custom Vision API:", error);
+      }
+      finally {
+        document.body.classList.remove("wait-cursor");
       }
     }
   };
@@ -211,6 +176,12 @@ function App() {
         idealResolution={{ width: 1600, height: 900 }}
       />
       </div>}
+      {apiResponse && (
+      <div>
+        <p>Total Amount: {apiResponse.totalAmount}</p>
+        <p>Total Weight: {apiResponse.totalWeight}</p>
+      </div>
+    )}
     </div>
   );
   }
