@@ -32,5 +32,5 @@ jobs:
         images: gocampo/backend
 
     - name: Build and push Docker image
-      run: cd backend && docker build . --file Dockerfile --tag gocampo/backend:$(date +%s) && docker push gocampo/backend:$(date +%s)
+      run: cd backend && docker build . --file Dockerfile --tag gocampo/backend:$(date +%s) && docker push gocampo/backend:latest
     
