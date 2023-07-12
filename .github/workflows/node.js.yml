@@ -30,5 +30,4 @@ jobs:
 
     #- run: npm ci
     - run: cd frontend && npm run build --if-present
-      working-directory: ./frontend
 
