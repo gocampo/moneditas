@@ -31,6 +31,13 @@ jobs:
       with:
         images: gocampo/backend
 
+    - name: Get current timestamp
+      id: timestamp
+      run: echo "::set-output name=timestamp::$(date +%s)"
+
     - name: Build and push Docker image
-      run: cd backend && docker build . --file Dockerfile --tag gocampo/backend:$(date +%s) && docker push gocampo/backend:latest
+      run: cd backend && docker build . --file Dockerfile --tag gocampo/backend:${{ steps.timestamp.outputs.timestamp }} 
+
+    - name: Push Docker image
+      run: docker push gocampo/backend:${{ steps.timestamp.outputs.timestamp }}
     
