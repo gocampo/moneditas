@@ -1,4 +1,4 @@
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import Camera from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
 
@@ -81,8 +81,6 @@ function App() {
   const sendImage = async (blob: Blob | null) => {
     if (blob) {
       try {
-        document.body.classList.add("wait-cursor");
-
         const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://localhost:7118/API";
         console.log("URL:"+url);
         const responseStr = await fetch(url,
@@ -137,9 +135,6 @@ function App() {
         }
       } catch (error) {
         console.error("Error sending image to Custom Vision API:", error);
-      }
-      finally {
-        document.body.classList.remove("wait-cursor");
       }
     }
   };
