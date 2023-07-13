@@ -54,6 +54,9 @@ function App() {
   const [isVisible, setIsVisible] = useState(true);
   const [apiResponse, setApiResponse] = useState<CalculationResult | null>(null);
   
+  const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://localhost:7118/API";
+  console.log("URL:"+url);
+
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   function onTakePhotoAnimationDone(): void {
@@ -93,7 +96,8 @@ function App() {
       try {
         document.body.classList.add("wait-cursor");
 
-        const url = process.env.COIN_COUNTER_URL || "https://localhost:7118/API";
+        const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://localhost:7118/API";
+        console.log("URL:"+url);
         const responseStr = await fetch(url,
           {
             method: "POST",
