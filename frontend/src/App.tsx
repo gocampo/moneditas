@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from "react";
+import React, { useRef, useState } from "react";
 import Camera from 'react-html5-camera-photo';
 import 'react-html5-camera-photo/build/css/index.css';
 
@@ -7,13 +7,6 @@ interface BoundingBox {
   top: number;
   width: number;
   height: number;
-}
-
-interface ObjectData {
-  probability: number;
-  tagId: string;
-  tagName: string;
-  boundingBox: BoundingBox;
 }
 
 interface CoinPrediction {
@@ -29,12 +22,6 @@ interface CalculationResult {
   totalWeight: number;
   coinPredictions: CoinPrediction[];
 }
-
-
-const IMAGE_TYPES = {
-  PNG: 'png',
-  JPG: 'jpg',
-};
 
 function dataURItoBlob(dataURI: string): Blob {
   let byteString = atob(dataURI.split(',')[1]);
@@ -160,7 +147,7 @@ function App() {
   return (
     <div className="App">
       <div>
-        <img id={'photo'} src={dataUri} style={{ display: 'none' }}/>
+        <img id={'photo'} src={dataUri} alt='' style={{ display: 'none' }}/>
       </div>
       <div 
         style={{ position: "absolute", left: '50%' , transform: 'scale(0.5) translate(-100%, -50%)', }}
