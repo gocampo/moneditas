@@ -32,12 +32,14 @@ jobs:
         cache-dependency-path: frontend/package-lock.json
     - run: cd frontend && npm ci
     - run: cd frontend && npm run build --if-present
-    - name: SCP Files
-      uses: appleboy/scp-action@v0.0.1
+    - name: SCP deploy action
+    - name: scp-pipeline
+        # You may pin to the exact commit or the version.
+        # uses: cross-the-world/scp-pipeline@b4d86397129250eb940fabdc3f7a435436d2503a
+      uses: cross-the-world/scp-pipeline@v1.2.1
       with:
+        # ssh remote host
         host: ${{ secrets.HOST }}
-        username: ${{ secrets.HOST_USER }}
-        password: ${{ secrets.HOST_PASSWORD }}
-        # port: ${{ secrets.PORT }}
-        source: "public"
-        target: /var/www/moneditas
+        user: ${{ secrets.HOST_USER }}
+        pass: ${{ secrets.HOST_PASSWORD }}
+        scp: build/* => /var/www/moneditas
