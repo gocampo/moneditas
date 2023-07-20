@@ -81,7 +81,7 @@ function App() {
   const sendImage = async (blob: Blob | null) => {
     if (blob) {
       try {
-        const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://localhost:7118/API";
+        const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://guilleocampo.com.ar/moneditas/backend/api";
         console.log("URL:"+url);
         const responseStr = await fetch(url,
           {
