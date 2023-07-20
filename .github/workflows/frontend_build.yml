@@ -32,3 +32,12 @@ jobs:
         cache-dependency-path: frontend/package-lock.json
     - run: cd frontend && npm ci
     - run: cd frontend && npm run build --if-present
+    - name: SCP Files
+      uses: appleboy/scp-action@v0.0.1
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.HOST_USER }}
+        password: ${{ secrets.HOST_PASSWORD }}
+        # port: ${{ secrets.PORT }}
+        source: "public"
+        target: /var/www/moneditas
