@@ -32,3 +32,12 @@ jobs:
         cache-dependency-path: frontend/package-lock.json
     - run: cd frontend && npm ci
     - run: cd frontend && npm run build --if-present
+    
+    - name: scp-pipeline
+      uses: cross-the-world/scp-pipeline@v1.2.1
+      with:
+        host: ${{ secrets.HOST }}
+        user: ${{ secrets.HOST_USER }}
+        pass: ${{ secrets.HOST_PASSWORD }}
+        scp: build/* => /var/www/moneditas
+
