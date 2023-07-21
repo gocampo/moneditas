@@ -65,6 +65,7 @@ function App() {
   }
 
   function handleTakePhoto(dataUri: string): void {
+    console.log("handleTakePhoto");
     const blob = dataURItoBlob(dataUri);
     setDataUri(dataUri);
     sendImage(blob);    
@@ -75,14 +76,16 @@ function App() {
   };
 
   const handleCanvasClickAndTouch = () => {
+    console.log("handleCanvasClickAndTouch");
     if (canvasRef.current) {
+      console.log("current");
     }
   };
 
   const sendImage = async (blob: Blob | null) => {
     if (blob) {
       try {
-        const url = process.env.REACT_APP_COIN_COUNTER_URL || window.location.href+"/moneditas/backend/api";
+        const url = process.env.REACT_APP_COIN_COUNTER_URL || window.location.href+"backend/api";
         console.log("URL:"+url);
         const responseStr = await fetch(url,
           {
@@ -152,7 +155,8 @@ function App() {
           ref={canvasRef}  
           onTouchStart={handleCanvasTouch}
         ></canvas>
-        {apiResponse && (        
+        {apiResponse && (
+          <div>        
           <div className="row">
             <div className="col">
               <h2 className="card-title">Total: $ {apiResponse.totalAmount}</h2>
@@ -160,7 +164,10 @@ function App() {
             <div className="col">
               <h2 className="card-title">Peso: {apiResponse.totalWeight} gs</h2>
             </div>
-          </div>)}
+          </div>
+          <button className="btn btn-primary rounded-pill px-3" type ="button" onClick={handleCanvasTouch} >Reiniciar</button>
+          </div>
+        )}
       </div>
       {isVisible && <div id="divCamera">
       <Camera
