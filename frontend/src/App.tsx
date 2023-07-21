@@ -151,6 +151,15 @@ function App() {
           ref={canvasRef}  
           onTouchStart={handleCanvasTouch}
         ></canvas>
+        {apiResponse && (        
+          <div className="row">
+            <div className="col">
+              <h2 className="card-title">Total: $ {apiResponse.totalAmount}</h2>
+            </div>
+            <div className="col">
+              <h2 className="card-title">Peso: {apiResponse.totalWeight} gs</h2>
+            </div>
+          </div>)}
       </div>
       {isVisible && <div id="divCamera">
       <Camera
@@ -162,12 +171,7 @@ function App() {
         idealResolution={{ width: 1600, height: 900 }}
       />
       </div>}
-      {apiResponse && (
-      <div>
-        <p>Total Amount: {apiResponse.totalAmount}</p>
-        <p>Total Weight: {apiResponse.totalWeight}</p>
-      </div>
-    )}
+
     </div>
   );
   }
