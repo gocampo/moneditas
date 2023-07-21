@@ -43,6 +43,7 @@ function App() {
   
   const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://localhost:7118/API";
   console.log("URL: "+url);
+  console.log("location.href: "+window.location.href)
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -81,7 +82,7 @@ function App() {
   const sendImage = async (blob: Blob | null) => {
     if (blob) {
       try {
-        const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://guilleocampo.com.ar/moneditas/backend/api";
+        const url = process.env.REACT_APP_COIN_COUNTER_URL || window.location.href+"/moneditas/backend/api";
         console.log("URL:"+url);
         const responseStr = await fetch(url,
           {
