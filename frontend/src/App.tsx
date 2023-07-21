@@ -40,6 +40,7 @@ function App() {
   const [dataUri, setDataUri] = useState<string>('');
   const [isVisible, setIsVisible] = useState(true);
   const [apiResponse, setApiResponse] = useState<CalculationResult | null>(null);
+  const [apiError, setApiError] = useState(false);
   
   const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://localhost:7118/API";
   console.log("URL: "+url);
@@ -79,6 +80,7 @@ function App() {
     console.log("handleCanvasClickAndTouch");
     if (canvasRef.current) {
       console.log("current");
+      setIsVisible(true);
     }
   };
 
@@ -100,9 +102,8 @@ function App() {
         console.log(responseStr);
 
         const apiResponse: CalculationResult = await responseStr.json();
-        setApiResponse(apiResponse);
-
         console.log(apiResponse);
+        setApiResponse(apiResponse);
 
         if (canvasRef.current) {
           const canvas = canvasRef.current;
@@ -138,7 +139,8 @@ function App() {
           }
         }
       } catch (error) {
-        console.error("Error sending image to Custom Vision API:", error);
+        console.error("Error processing image: ", error);
+        setApiError(true);
       }
     }
   };
@@ -167,6 +169,15 @@ function App() {
           </div>
           <button className="btn btn-primary rounded-pill px-3" type ="button" onClick={handleCanvasTouch} >Reiniciar</button>
           </div>
+        )}
+        {apiError && (
+        <div>
+          <div className="alert alert-danger alert-dismissible fade show" role="alert">
+          Ups, se produjo un error!
+          <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          <button className="btn btn-primary rounded-pill px-3" type ="button" onClick={handleCanvasTouch} >Reiniciar</button>
+        </div>
         )}
       </div>
       {isVisible && <div id="divCamera">
