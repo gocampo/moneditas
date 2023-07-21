@@ -81,6 +81,7 @@ function App() {
     if (canvasRef.current) {
       console.log("current");
       setIsVisible(true);
+      setApiResponse(null);
     }
   };
 
