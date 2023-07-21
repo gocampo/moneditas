@@ -101,15 +101,15 @@ function App() {
 
         console.log(responseStr);
 
-        const apiResponse: CalculationResult = await responseStr.json();
-        console.log(apiResponse);
-        setApiResponse(apiResponse);
+        const apiResponseJson: CalculationResult = await responseStr.json();
+        console.log(apiResponseJson);
+        setApiResponse(apiResponseJson);
 
         if (canvasRef.current) {
           const canvas = canvasRef.current;
           const context = canvas.getContext("2d");
           if (context) {
-            apiResponse.coinPredictions.forEach((obj) => {
+            apiResponseJson.coinPredictions.forEach((obj) => {
               const { left, top, width, height } = obj.boundingBox;
               const scaledLeft = left * canvas.width;
               const scaledTop = top * canvas.height;
@@ -140,6 +140,7 @@ function App() {
         }
       } catch (error) {
         console.error("Error processing image: ", error);
+        setApiResponse(null);
         setApiError(true);
       }
     }
