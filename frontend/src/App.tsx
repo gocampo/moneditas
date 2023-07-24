@@ -38,13 +38,14 @@ function dataURItoBlob(dataURI: string): Blob {
 
 function App() {
   const [dataUri, setDataUri] = useState<string>('');
-  const [isVisible, setIsVisible] = useState(true);
+  const [isCameraVisible, setIsCameraVisible] = useState(true);
+  const [isProcessing, setisProcessing] = useState(false);
   const [apiResponse, setApiResponse] = useState<CalculationResult | null>(null);
   const [apiError, setApiError] = useState(false);
-  
+
   const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://localhost:7118/API";
-  console.log("URL: "+url);
-  console.log("location.href: "+window.location.href)
+  console.log("URL: " + url);
+  console.log("location.href: " + window.location.href)
 
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -61,17 +62,18 @@ function App() {
         context.clearRect(0, 0, canvas.width, canvas.height);
         context.drawImage(image, 0, 0, canvas.width, canvas.height);
       };
-      setIsVisible(!isVisible);
     };
   }
 
   function handleTakePhoto(dataUri: string): void {
     console.log("handleTakePhoto");
+    setisProcessing(true);
+    setIsCameraVisible(false);
     const blob = dataURItoBlob(dataUri);
     setDataUri(dataUri);
-    sendImage(blob);    
+    sendImage(blob);
   }
-  
+
   const handleCanvasTouch = () => {
     handleCanvasClickAndTouch();
   };
@@ -79,8 +81,7 @@ function App() {
   const handleCanvasClickAndTouch = () => {
     console.log("handleCanvasClickAndTouch");
     if (canvasRef.current) {
-      console.log("current");
-      setIsVisible(true);
+      setIsCameraVisible(true);
       setApiResponse(null);
     }
   };
@@ -88,8 +89,8 @@ function App() {
   const sendImage = async (blob: Blob | null) => {
     if (blob) {
       try {
-        const url = process.env.REACT_APP_COIN_COUNTER_URL || window.location.href+"backend/api";
-        console.log("URL:"+url);
+        const url = process.env.REACT_APP_COIN_COUNTER_URL || window.location.href + "backend/api";
+        console.log("URL:" + url);
         const responseStr = await fetch(url,
           {
             method: "POST",
@@ -105,6 +106,7 @@ function App() {
         const apiResponseJson: CalculationResult = await responseStr.json();
         console.log(apiResponseJson);
         setApiResponse(apiResponseJson);
+        setisProcessing(false)
 
         if (canvasRef.current) {
           const canvas = canvasRef.current;
@@ -126,7 +128,7 @@ function App() {
               context.fillStyle = "red";
               const boxHeight = 35;
               const boxWidth = 80;
-              context.fillRect(scaledLeft, scaledTop-boxHeight, boxWidth, boxHeight);
+              context.fillRect(scaledLeft, scaledTop - boxHeight, boxWidth, boxHeight);
 
               context.fillStyle = "white";
               context.font = "32px Helvetica Neue";
@@ -143,6 +145,7 @@ function App() {
         console.error("Error processing image: ", error);
         setApiResponse(null);
         setApiError(true);
+        setisProcessing(false);
       }
     }
   };
@@ -150,52 +153,76 @@ function App() {
   return (
     <div className="App">
       <div>
-        <img id={'photo'} src={dataUri} alt='' style={{ display: 'none' }}/>
-      </div>
-      <div 
-        style={{ position: "absolute", left: '50%' , transform: 'scale(0.5) translate(-100%, -50%)', }}
-      >
-        <canvas 
-          ref={canvasRef}  
-          onTouchStart={handleCanvasTouch}
-        ></canvas>
-        {apiResponse && (
-          <div>        
-          <div className="row">
-            <div className="col">
-              <h2 className="card-title">Total: $ {apiResponse.totalAmount}</h2>
-            </div>
-            <div className="col">
-              <h2 className="card-title">Peso: {apiResponse.totalWeight} gs</h2>
-            </div>
-          </div>
-          <button className="btn btn-primary rounded-pill px-3" type ="button" onClick={handleCanvasTouch} >Reiniciar</button>
-          </div>
-        )}
-        {apiError && (
         <div>
-          <div className="alert alert-danger alert-dismissible fade show" role="alert">
-          Ups, se produjo un error!
-          <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-          </div>
-          <button className="btn btn-primary rounded-pill px-3" type ="button" onClick={handleCanvasTouch} >Reiniciar</button>
+          <img id={'photo'} src={dataUri} alt='' style={{ display: 'none' }} />
         </div>
-        )}
-      </div>
-      {isVisible && <div id="divCamera">
-      <Camera
-        onTakePhoto =  { handleTakePhoto } 
-        onTakePhotoAnimationDone = {onTakePhotoAnimationDone}
-        idealFacingMode={'environment'}
-        sizeFactor={1}
-        imageCompression={0}
-        idealResolution={{ width: 1600, height: 900 }}
-      />
-      </div>}
+        <div
+          style={{ position: "absolute", left: '50%', transform: 'scale(0.5) translate(-100%, -50%)', }}
+        >
 
+          {!isCameraVisible && (
+          <canvas
+            ref={canvasRef}
+          >
+          </canvas>
+          )}
+
+          <div>
+            {isProcessing && (
+              <div className="d-flex gap-2 justify-content-center">
+                <button className="btn btn-primary" type="button">
+                  <span className="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+                  Procesando...
+                </button>
+              </div>
+            )}
+
+            {apiResponse && (
+
+            <div>
+              <div className="d-flex gap-2 justify-content-center py-5">
+                <div className="row w-50">
+                  <div className="col">
+                    <h1>Total: $ {apiResponse.totalAmount}</h1>
+                  </div>
+                  <div className="col">
+                    <h1>Peso: {apiResponse.totalWeight} gs</h1>
+                  </div>
+                </div>
+              </div>
+              <div className="d-flex gap-2 justify-content-center py-2">
+                <button className="btn btn-primary rounded-pill px-3" type="button" onClick={handleCanvasTouch} >Reiniciar</button>
+              </div>
+            </div>
+            )}
+
+            {apiError && (
+              <div>
+                <div className="alert alert-danger alert-dismissible fade show" role="alert">
+                  Ups, se produjo un error!
+                  <button type="button" className="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+                <button className="btn btn-primary rounded-pill px-3" type="button" onClick={handleCanvasTouch} >Reiniciar</button>
+              </div>
+            )}
+          </div>
+        </div>
+
+
+        {isCameraVisible && <div id="divCamera">
+          <Camera
+            onTakePhoto={handleTakePhoto}
+            onTakePhotoAnimationDone={onTakePhotoAnimationDone}
+            idealFacingMode={'environment'}
+            sizeFactor={1}
+            imageCompression={0}
+            idealResolution={{ width: 1600, height: 900 }}
+          />
+        </div>}
+      </div>
     </div>
   );
-  }
+}
 
 
 export default App;
