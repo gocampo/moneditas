@@ -2,7 +2,20 @@ version: '3.4'
 
 services:
   backend:
-    image: moneditas
-    build:
-      context: .
-      dockerfile: backend/Dockerfile
+    image: gocampo/backend
+    restart: always
+    ports: 
+      - 8100:80
+    environment:
+      - ASPNETCORE_URLS=http://+
+
+  mongodb:
+    image: mongo
+    ports: 
+      - 27017:27017
+    volumes:
+      - data:/data/db
+    restart: always
+
+volumes:
+  data:
