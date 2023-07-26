@@ -1,6 +1,7 @@
 name: Docker Image CI
 
 on:
+  workflow_dispatch:
   push:
     branches: [ "main" ]
     paths:
@@ -32,4 +33,13 @@ jobs:
 
     - name: Push Docker image
       run: docker push gocampo/backend:latest
+      
+    - name: scp-pipeline
+      uses: cross-the-world/scp-pipeline@v1.2.1
+      with:
+        host: ${{ secrets.HOST }}
+        user: ${{ secrets.HOST_USER }}
+        pass: ${{ secrets.HOST_PASSWORD }}
+        local: .//docker-compose.yaml
+        remote: /opt/moneditas
     
