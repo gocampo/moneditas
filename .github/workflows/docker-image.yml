@@ -40,6 +40,6 @@ jobs:
         host: ${{ secrets.HOST }}
         user: ${{ secrets.HOST_USER }}
         pass: ${{ secrets.HOST_PASSWORD }}
-        local: .//docker-compose.yaml
+        local: .//docker-compose.yml
         remote: /opt/moneditas
     
