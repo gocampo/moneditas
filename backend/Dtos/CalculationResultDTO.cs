@@ -1,13 +1,13 @@
-using backend.Dtos;
+namespace backend.Dtos;
 
-namespace backend.Models;
-
-public record CalculationResult
+public record CalculationResultDTO
 {
     public List<CoinPredictionDto> CoinPredictions { get; init; }
     public double TotalAmount { get; set; }
     public double TotalWeight { get; set; }
-    public CalculationResult()
+    public int TotalCount { get; internal set; }
+
+    public CalculationResultDTO()
     {
         CoinPredictions = new List<CoinPredictionDto>();
     }    

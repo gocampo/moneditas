@@ -1,3 +1,4 @@
 backend/bin/*
 backend/obj/*
 frontend/src/test.html
+.DS_Store

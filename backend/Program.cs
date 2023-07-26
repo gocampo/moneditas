@@ -1,4 +1,5 @@
 using backend.Models;
+using backend.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,9 +15,10 @@ builder.Services.AddCors(options =>
     });
 });
 
-builder.Services.AddSingleton<ICoinManager, CoinManager>();
+builder.Services.AddSingleton<ICoinCatalog, CoinCatalog>();
+builder.Services.AddSingleton<IAuditService, AuditService>();
+builder.Services.AddHttpClient();
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
@@ -31,7 +33,6 @@ if (app.Environment.IsDevelopment())
 
 app.UseCors();
 app.UseHttpsRedirection();
-
 
 app.UseAuthorization();
 

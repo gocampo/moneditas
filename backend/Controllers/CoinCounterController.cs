@@ -3,21 +3,28 @@ using backend.Models;
 using Microsoft.AspNetCore.Mvc;
 using System.Text.Json;
 using System.IO;
+using backend.Dtos;
+using backend.Services;
 
 [ApiController]
 [Route("api")]
 public class CoinCounterController : ControllerBase
 {
     private const double PROBABILITY_THRESHOLD = 0.9;
-    private readonly ICoinManager coinManager;
-    private CalculationResult SumCoins(IEnumerable<Prediction> predictions)
+    private readonly ICoinCatalog _coinCatalog;
+    private readonly IConfiguration _configuration;
+    private readonly IAuditService _auditService;
+    private readonly IHttpClientFactory _httpClientFactory;
+    private readonly ILogger<CoinCounterController> _logger;
+
+    private CalculationResultDTO SumCoins(IEnumerable<Prediction> predictions)
     {
-        var result = new CalculationResult();
+        var result = new CalculationResultDTO();
         foreach (var prediction in predictions)
         {
             if (prediction.probability > PROBABILITY_THRESHOLD)
             {
-                Coin coin = coinManager.GetCoinByTagName(prediction.tagName);
+                Coin coin = _coinCatalog.GetCoinByTagName(prediction.tagName);
                 result.CoinPredictions.Add(new Dtos.CoinPredictionDto(coin.Name,
                                                                          coin.Value,
                                                                          coin.Weight,
@@ -25,12 +32,14 @@ public class CoinCounterController : ControllerBase
                                                                          prediction.boundingBox));
                 result.TotalAmount += coin.Value;
                 result.TotalWeight += coin.Weight;
+                result.TotalCount++;
             }
         }
         return result;
-    } 
+    }
 
-    private byte[] LoadFromFile(){
+    private byte[] LoadFromFile()
+    {
         string filePath = "/var/tmp/coin.jpg";
         byte[] fileBytes = System.IO.File.ReadAllBytes(filePath);
         return fileBytes;
@@ -39,17 +48,15 @@ public class CoinCounterController : ControllerBase
     [HttpGet]
     public ActionResult<string> Get()
     {
-        Console.WriteLine("Get");
+        _logger.LogInformation("Get");
         return Ok("Hello world! Everything is working fine here.");
     }
 
     [HttpPost]
-    public async Task<ActionResult<CalculationResult>> Count()
+    public async Task<ActionResult<CalculationResultDTO>> Count()
     {
-        Console.WriteLine("Count");
+        _logger.LogInformation("Count");
 
-        // byte[] imageBytes = LoadFromFile();
-        
         byte[] imageBytes;
         using (var stream = new MemoryStream())
         {
@@ -57,33 +64,42 @@ public class CoinCounterController : ControllerBase
             imageBytes = stream.ToArray();
         }
 
-        HttpClient client = new HttpClient();
-        string uri = "https://moneditas-prediction.cognitiveservices.azure.com/customvision/v3.0/Prediction/bd7a3841-89b3-4468-96d2-c051ab32af86/detect/iterations/Iteration8/image";
-        client.DefaultRequestHeaders.Add("Prediction-Key", "db86459213904561a66b753453f41090");
+        var httpClient = _httpClientFactory.CreateClient();
+        string uri = _configuration["PredictionAPI:URI"];
+        string predictionKey = _configuration["PredictionAPI:Key"];
+        httpClient.DefaultRequestHeaders.Add("Prediction-Key", predictionKey);
         HttpContent content = new ByteArrayContent(imageBytes);
         content.Headers.ContentType = new System.Net.Http.Headers.MediaTypeHeaderValue("application/octet-stream");
-        HttpResponseMessage response = await client.PostAsync(uri, content);
+
+        HttpResponseMessage response = await httpClient.PostAsync(uri, content);
+
         response.EnsureSuccessStatusCode();
-        string apiResponse = response.Content.ReadAsStringAsync().Result;
-        if (apiResponse.Equals(string.Empty)){
+        string apiResponse = await response.Content.ReadAsStringAsync();
+        if (apiResponse.Equals(string.Empty))
+        {
             return NotFound();
         }
-        Console.WriteLine(apiResponse);
         var customVisionAPIPredictions = JsonSerializer.Deserialize<CustomVisionAPIResponse>(apiResponse);
         if (customVisionAPIPredictions == null || customVisionAPIPredictions.predictions == null)
         {
             return NotFound();
         }
-        CalculationResult result = SumCoins(customVisionAPIPredictions.predictions);
-        Console.WriteLine(result);
-
+        CalculationResultDTO result = SumCoins(customVisionAPIPredictions.predictions);
+        await _auditService.CreateAsync(result);
         return result;
     }
 
-    public CoinCounterController(ICoinManager coinManager)
+    public CoinCounterController(IConfiguration configuration,
+        ICoinCatalog coinCatalog,
+        IAuditService auditService,
+        IHttpClientFactory httpClientFactory,
+        ILogger<CoinCounterController> logger)
     {
-        this.coinManager = coinManager;
-
+        _coinCatalog = coinCatalog;
+        _configuration = configuration;
+        _auditService = auditService;
+        _httpClientFactory = httpClientFactory;
+        _logger = logger;
     }
 
 }
