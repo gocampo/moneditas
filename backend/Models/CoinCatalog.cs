@@ -7,10 +7,10 @@ public interface ICoinCatalog
 
 public class CoinCatalog : ICoinCatalog
 {
-    private List<Coin> Coins { get; init; }
+    private List<Coin> _coins { get; init; }
     public Coin GetCoinByTagName(string tagName)
     {
-        Coin? coin = Coins.Find(c => c.TagName.Equals(tagName, StringComparison.OrdinalIgnoreCase));
+        Coin? coin = _coins.Find(c => c.TagName.Equals(tagName, StringComparison.OrdinalIgnoreCase));
         if (coin == null)
         {
             throw new Exception($"Tag name {tagName} not found");
@@ -19,7 +19,7 @@ public class CoinCatalog : ICoinCatalog
     }
     public CoinCatalog()
     {
-        Coins = new List<Coin>{
+        _coins = new List<Coin>{
         new Coin("$ 1", "ar_1p", 1, 6.35),
         new Coin("$ 1", "ar_1p_small", 1, 4.30),
         new Coin("$ 2", "ar_2p", 2, 7.20),

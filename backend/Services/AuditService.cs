@@ -10,20 +10,27 @@ public interface IAuditService
 
 public class AuditService : IAuditService
 {
-    private readonly IConfiguration configuration;
-    private readonly IMongoCollection<CalculationResultDTO> _AuditCollection;
+    private readonly IConfiguration _configuration;
+    private readonly ILogger<AuditService> _logger;
+    private readonly IMongoCollection<CalculationResultDTO> _auditCollection;
 
-    public AuditService(IConfiguration configuration)
+    public AuditService(IConfiguration configuration, ILogger<AuditService> logger)
     {
-        this.configuration = configuration;
+        _configuration = configuration;
+        _logger = logger;
 
-        _AuditCollection = new MongoClient(
+        _logger.LogInformation("Connecting to MongoDB...");
+        _logger.LogInformation("Connection string: " + configuration["DBSettings:ConnectionString"]);
+        _logger.LogInformation("Database: " + configuration["DBSettings:Database"]);
+        _logger.LogInformation("Collection: " + configuration["DBSettings:Collection"]);
+
+        _auditCollection = new MongoClient(
             configuration["DBSettings:ConnectionString"]).GetDatabase(
             configuration["DBSettings:Database"]).GetCollection<CalculationResultDTO>(
             configuration["DBSettings:Collection"]);
     }
 
     public async Task CreateAsync(CalculationResultDTO calculationResultDTO) =>
-        await _AuditCollection.InsertOneAsync(calculationResultDTO);
+        await _auditCollection.InsertOneAsync(calculationResultDTO);
 
 }
