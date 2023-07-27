@@ -152,6 +152,7 @@ function App() {
         <div>
           <img id={'photo'} src={dataUri} alt='' style={{ display: 'none' }} />
         </div>
+        <div>
         <div
           style={{ position: "absolute", left: '50%', transform: 'scale(0.5) translate(-100%, -50%)', }}
         >
@@ -162,6 +163,7 @@ function App() {
           >
           </canvas>
           )}
+        </div>
 
           <div>
             {isProcessing && (
@@ -182,12 +184,12 @@ function App() {
                     <h1>Total: $ {apiResponse.totalAmount}</h1>
                   </div>
                   <div className="col">
-                    <h1>Peso: {apiResponse.totalWeight} gs</h1>
+                    <h1>Peso: {apiResponse.totalWeight}</h1>
                   </div>
                 </div>
               </div>
-              <div className="d-flex gap-2 justify-content-center py-2">
-                <button className="btn btn-primary rounded-pill px-3" type="button" onClick={handleCanvasTouch} >Reiniciar</button>
+              <div className="d-flex justify-content-center">
+                <button className="btn btn-primary d-inline-flex align-items-center" type="button" onClick={handleCanvasTouch} >Reiniciar</button>
               </div>
             </div>
             )}
