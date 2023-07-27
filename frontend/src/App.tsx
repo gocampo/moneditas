@@ -182,7 +182,7 @@ function App() {
                     <h1>Total: $ {apiResponse.totalAmount}</h1>
                   </div>
                   <div className="col">
-                    <h1>Peso: {apiResponse.totalWeight} gs</h1>
+                    <h1>Peso: {apiResponse.totalWeight}</h1>
                   </div>
                 </div>
               </div>
