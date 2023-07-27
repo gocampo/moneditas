@@ -9,9 +9,9 @@ services:
     environment:
       - ASPNETCORE_URLS=http://+
       - PredictionAPI__Key=${PredictionAPI__Key}
-      - DBSettings__ConnectionString=${DBSettings__ConnectionString}
-      - DBSettings__Database=${DBSettings__Database}
-      - DBSettings__Collection=${DBSettings__Collection}
+      - DBSettings__ConnectionString=${DBSettings__ConnectionString:-mongodb://mongodb:27017}
+      - DBSettings__Database=${DBSettings__Database:-moneditas}
+      - DBSettings__Collection=${DBSettings__Collection:-Results}
 
   mongodb:
     image: mongo
