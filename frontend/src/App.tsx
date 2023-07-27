@@ -43,10 +43,6 @@ function App() {
   const [apiResponse, setApiResponse] = useState<CalculationResult | null>(null);
   const [apiError, setApiError] = useState(false);
 
-  const url = process.env.REACT_APP_COIN_COUNTER_URL || "https://localhost:7118/API";
-  console.log("URL: " + url);
-  console.log("location.href: " + window.location.href)
-
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   function onTakePhotoAnimationDone(): void {
