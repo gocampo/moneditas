@@ -8,6 +8,7 @@ services:
       - 8100:80
     environment:
       - ASPNETCORE_URLS=http://+
+      - PredictionAPI__Key=${PredictionAPI__Key}
 
   mongodb:
     image: mongo
