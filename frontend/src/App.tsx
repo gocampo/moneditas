@@ -149,10 +149,11 @@ function App() {
   return (
     <div className="App">
       <div>
+      <div>
+
         <div>
           <img id={'photo'} src={dataUri} alt='' style={{ display: 'none' }} />
         </div>
-        <div>
         <div
           style={{ position: "absolute", left: '50%', transform: 'scale(0.5) translate(-100%, -50%)', }}
         >
