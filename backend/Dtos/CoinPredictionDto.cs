@@ -4,11 +4,11 @@ namespace backend.Dtos;
 
 public record CoinPredictionDto{
     public string Name { get; init;}
-    public double Value { get; init;}
-    public double Weight { get; init;}
-    public double Probability {get; init;}
+    public decimal Value { get; init;}
+    public decimal Weight { get; init;}
+    public float Probability {get; init;}
     public BoundingBox BoundingBox { get; init;} 
-    public CoinPredictionDto(string name, double value, double weight, double probability, BoundingBox boundingBox)
+    public CoinPredictionDto(string name, decimal value, decimal weight, float probability, BoundingBox boundingBox)
     {
         Name = name;
         Value = value;

@@ -10,7 +10,7 @@ using backend.Services;
 [Route("api")]
 public class CoinCounterController : ControllerBase
 {
-    private const double PROBABILITY_THRESHOLD = 0.9;
+    private const float PROBABILITY_THRESHOLD = 0.9f;
     private readonly ICoinCatalog _coinCatalog;
     private readonly IConfiguration _configuration;
     private readonly IAuditService _auditService;
