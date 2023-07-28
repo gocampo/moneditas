@@ -30,7 +30,8 @@ public class AuditService : IAuditService
             configuration["DBSettings:Collection"]);
     }
 
-    public async Task CreateAsync(CalculationResultDTO calculationResultDTO) =>
+    public async Task CreateAsync(CalculationResultDTO calculationResultDTO){
+        calculationResultDTO.CreatedAt = DateTime.Now;
         await _auditCollection.InsertOneAsync(calculationResultDTO);
-
+    }
 }
